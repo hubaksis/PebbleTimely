@@ -219,9 +219,9 @@ persist settings = {
   .version    = 12,
   .inverted   = 0, // no, dark
   .day_invert = 1, // yes
-  .grid       = 1, // yes
-  .vibe_hour  = 0, // no
-  .dayOfWeekOffset = 0, // 0 - 6, Sun - Sat
+  .grid       = 0, // yes
+  .vibe_hour  = 5, // no
+  .dayOfWeekOffset = 1, // 0 - 6, Sun - Sat
   .date_format = 0, // Month DD, YYYY
   .show_am_pm  = 0, // no AM/PM       [0:Hide, 1:AM/PM, 2:TZ,    3:Week,  4:DoY,  5:DLiY,   6:Seconds]
   .show_day    = 0, // no day name    [0:Hide, 1:Day,   2:Month, 3:TZ,    4:Week, 5:AM/PM   6:DoY/DLiY]
@@ -272,8 +272,8 @@ persist_adv_settings adv_settings = {
   .showDate = 1,        // Date: 0: never, 1: always
   // DND start/stop (suppress vibrations, Weather updates, pretty much anything except updating the time)
     // ...hopefully this will become pointless with a SDK update which exposes the watches DND...
-  .DND_start = 0,       // Do Not Disturb: 10 minute increments, 0 = 12:00am, 144 = 12:00am (following day)
-  .DND_stop  = 0,       // Do Not Disturb: 10 minute increments, 0 = 12:00am, 144 = 12:00am (following day)
+  .DND_start = 133,       // Do Not Disturb: 10 minute increments, 0 = 12:00am, 144 = 12:00am (following day)
+  .DND_stop  = 47,       // Do Not Disturb: 10 minute increments, 0 = 12:00am, 144 = 12:00am (following day)
   .DND_accel_off = 0,   // Do Not Disturb: disable accelerometer polling during DND?
   // hourly vibration start/stop
   .vibe_hour_start = 0, // Hour Vibe: 10 minute increments, 0 = 12:00am, 144 = 12:00am (following day)
@@ -289,8 +289,8 @@ persist_adv_settings adv_settings = {
   .clock2_tz = 0,       // 2nd clock: tz offset in 15 minute increments
   .clock2_desc = { "Second Clock" }, // 2nd clock: desc / city name of 2nd clock
   // Weather
-  .weather_format = 0,  // Weather: 0: fahrenheit, 1: celsius
-  .weather_update = 15, // Weather: minutes between weather updates
+  .weather_format = 1,  // Weather: 0: fahrenheit, 1: celsius
+  .weather_update = 60, // Weather: minutes between weather updates
   .weather_lat = "",    // latitude for 'static' weather lookups (GPS disabled)
   .weather_lon = "",   // longitude for 'static' weather lookups (GPS disabled)
   // Font
@@ -1242,7 +1242,7 @@ static void handle_battery(BatteryChargeState charge_state) {
 
   set_status_charging_icon();
 
-  snprintf(battery_text, sizeof(battery_text), "%d", charge_state.charge_percent);
+  snprintf(battery_text, sizeof(battery_text), "%d%%", charge_state.charge_percent);
   text_layer_set_text(text_battery_layer, battery_text);
   layer_mark_dirty(battery_layer);
   statusbar_visible();
@@ -1272,8 +1272,8 @@ void generate_vibe(uint32_t vibe_pattern_number) {
     break;
   case 5: // Subtle
     vibes_enqueue_custom_pattern( (VibePattern) {
-      .durations = (uint32_t []) {50, 200, 50, 200, 50, 200, 50},
-      .num_segments = 7
+      .durations = (uint32_t []) {50, 200, 50},
+      .num_segments = 3
     } );
     break;
   case 6: // Less Subtle
@@ -1438,7 +1438,7 @@ static void window_load(Window *window) {
   set_status_charging_icon();
 
   battery_layer = layer_create(stat_bounds);
-  layer_set_update_proc(battery_layer, battery_layer_update_callback);
+  //layer_set_update_proc(battery_layer, battery_layer_update_callback);
   layer_add_child(statusbar, battery_layer);
 
   datetime_layer = layer_create(slot_top_bounds);
